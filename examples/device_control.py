@@ -3,31 +3,29 @@
 from devicebase import DeviceBaseClient
 
 # Initialize client (reads DEVICEBASE_API_KEY from environment)
-client = DeviceBaseClient()
-
-device = "device123"
+client = DeviceBaseClient(serial="device123")
 
 # === Device Info ===
-info = client.get_device_info(device)
+info = client.get_device_info()
 print(f"Device: {info.data['data']}")
 
 # === Touch Operations ===
-client.tap(device, x=540, y=960)  # Single tap at center-bottom
-client.double_tap(device, x=540, y=960)  # Double tap
-client.long_press(device, x=540, y=960)  # Long press (opens context menu)
-client.swipe(device, x1=540, y1=1600, x2=540, y2=400)  # Swipe up
+client.tap(x=540, y=960)  # Single tap at center-bottom
+client.double_tap(x=540, y=960)  # Double tap
+client.long_press(x=540, y=960)  # Long press (opens context menu)
+client.swipe(x1=540, y1=1600, x2=540, y2=400)  # Swipe up
 
 # === Navigation ===
-client.back(device)  # Press back button
-client.home(device)  # Press home button
+client.back()  # Press back button
+client.home()  # Press home button
 
 # === App Operations ===
-client.launch_app(device, "华为商城")  # Launch Huawei Mall
-app_info = client.get_current_app(device) 
+client.launch_app("华为商城")  # Launch Huawei Mall
+app_info = client.get_current_app()
 print(f"Foreground app: {app_info.data['data'].get('app_name')}")
 
 # === Text Input ===
-client.input_text(device, "Hello World")  # Type text
-client.clear_text(device)  # Clear text field
+client.input_text("Hello World")  # Type text
+client.clear_text()  # Clear text field
 
 client.close()

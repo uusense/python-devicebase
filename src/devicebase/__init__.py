@@ -19,7 +19,7 @@ from devicebase.models import (
 )
 from devicebase.websocket_client import MinicapClient, MinitouchClient
 
-__version__ = "2026.4.3"
+__version__ = "2026.4.21"
 
 __all__ = [
     # Main client

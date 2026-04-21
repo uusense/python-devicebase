@@ -4,13 +4,11 @@ import asyncio
 
 from devicebase import DeviceBaseClient
 
-SERIAL = "device123"
-
 
 async def basic_touch():
     """Basic tap and swipe using MinitouchClient."""
-    client = DeviceBaseClient()
-    minitouch = client.minitouch_client(SERIAL)
+    client = DeviceBaseClient(serial="device123")
+    minitouch = client.minitouch_client()
 
     async with minitouch:
         # Tap at coordinates
@@ -42,8 +40,8 @@ async def basic_touch():
 
 async def drag_and_drop():
     """Drag and drop gesture simulation."""
-    client = DeviceBaseClient()
-    minitouch = client.minitouch_client(SERIAL)
+    client = DeviceBaseClient(serial="device123")
+    minitouch = client.minitouch_client()
 
     start_x, start_y = 540, 1600
     end_x, end_y = 540, 400

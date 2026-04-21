@@ -7,8 +7,6 @@ from datetime import datetime
 
 from devicebase import DeviceBaseClient
 
-SERIAL = "device123"
-
 
 async def process_frame(frame: bytes, index: int) -> dict:
     """Process a single frame (simulate analysis)."""
@@ -23,11 +21,11 @@ async def stream_with_save(output_dir: str = "frames"):
     """Stream frames and save to disk."""
     os.makedirs(output_dir, exist_ok=True)
 
-    client = DeviceBaseClient()
+    client = DeviceBaseClient(serial="device123")
     frame_count = 0
 
     try:
-        async for frame in client.stream_minicap(SERIAL):
+        async for frame in client.stream_minicap():
             # Save frame
             filename = f"{output_dir}/frame_{frame_count:06d}.jpg"
             with open(filename, "wb") as f:
@@ -51,12 +49,12 @@ async def stream_with_save(output_dir: str = "frames"):
 
 async def stream_with_interval(fps: float = 5.0):
     """Stream frames at a fixed interval (not full speed)."""
-    client = DeviceBaseClient()
+    client = DeviceBaseClient(serial="device123")
     interval = 1.0 / fps
     frame_count = 0
 
     try:
-        async for frame in client.stream_minicap(SERIAL):
+        async for frame in client.stream_minicap():
             # Process frame
             timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
             print(f"[{timestamp}] Frame {frame_count}: {len(frame)} bytes")
@@ -77,10 +75,10 @@ async def stream_with_interval(fps: float = 5.0):
 
 async def stream_encode_base64():
     """Stream frames encoded as base64 (for API transmission)."""
-    client = DeviceBaseClient()
+    client = DeviceBaseClient(serial="device123")
     frame_count = 0
 
-    async for frame in client.stream_minicap(SERIAL):
+    async for frame in client.stream_minicap():
         # Encode as base64 for transmission
         encoded = base64.b64encode(frame).decode("utf-8")
 

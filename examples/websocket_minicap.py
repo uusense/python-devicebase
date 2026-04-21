@@ -4,16 +4,14 @@ import asyncio
 
 from devicebase import DeviceBaseClient
 
-SERIAL = "device123"
-
 
 async def stream_screen():
     """Stream and display device screen frames."""
-    client = DeviceBaseClient()
+    client = DeviceBaseClient(serial="device123")
 
     # Use the high-level stream method
     frame_count = 0
-    async for frame in client.stream_minicap(SERIAL):
+    async for frame in client.stream_minicap():
         # Save frame to file
         with open(f"frame_{frame_count:04d}.jpg", "wb") as f:
             f.write(frame)
@@ -30,10 +28,10 @@ async def stream_screen():
 
 async def capture_single():
     """Capture a single frame from the stream."""
-    client = DeviceBaseClient()
+    client = DeviceBaseClient(serial="device123")
 
     # Using minicap_client for more control
-    minicap = client.minicap_client(SERIAL)
+    minicap = client.minicap_client()
 
     frame = await minicap.capture_frame()
     with open("capture.jpg", "wb") as f:

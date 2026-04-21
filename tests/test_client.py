@@ -17,9 +17,11 @@ class TestDeviceBaseClientInit:
 
     def test_init_with_explicit_params(self) -> None:
         client = DeviceBaseClient(
+            serial="device123",
             base_url="http://test.com",
             api_key="test-key",
         )
+        assert client._serial == "device123"
         assert client._base_url == "http://test.com"
         assert client._api_key == "test-key"
         client.close()
@@ -29,14 +31,14 @@ class TestDeviceBaseClientInit:
             os.environ,
             {"DEVICEBASE_BASE_URL": "http://env.com", "DEVICEBASE_API_KEY": "env-key"},
         ):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             assert client._base_url == "http://env.com"
             assert client._api_key == "env-key"
             client.close()
 
     def test_init_missing_api_key_raises(self) -> None:
         with patch.dict(os.environ, {}, clear=True), pytest.raises(AuthenticationError):
-            DeviceBaseClient()
+            DeviceBaseClient(serial="device123")
 
 
 class TestDeviceBaseClientContextManager:
@@ -45,7 +47,7 @@ class TestDeviceBaseClientContextManager:
     def test_context_manager(self) -> None:
         with (
             patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}),
-            DeviceBaseClient() as client,
+            DeviceBaseClient(serial="device123") as client,
         ):
             assert isinstance(client, DeviceBaseClient)
 
@@ -55,11 +57,11 @@ class TestDeviceBaseClientTouchOperations:
 
     def test_tap(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             client._http = MagicMock()
             client._http.tap.return_value = MagicMock(success=True)
 
-            result = client.tap("device123", x=100, y=200)
+            result = client.tap(x=100, y=200)
 
             assert result.success is True
             client._http.tap.assert_called_once_with("device123", Point(x=100, y=200))
@@ -67,11 +69,11 @@ class TestDeviceBaseClientTouchOperations:
 
     def test_double_tap(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             client._http = MagicMock()
             client._http.double_tap.return_value = MagicMock(success=True)
 
-            result = client.double_tap("device123", x=50, y=75)
+            result = client.double_tap(x=50, y=75)
 
             assert result.success is True
             client._http.double_tap.assert_called_once_with("device123", Point(x=50, y=75))
@@ -79,11 +81,11 @@ class TestDeviceBaseClientTouchOperations:
 
     def test_long_press(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             client._http = MagicMock()
             client._http.long_press.return_value = MagicMock(success=True)
 
-            result = client.long_press("device123", x=100, y=200)
+            result = client.long_press(x=100, y=200)
 
             assert result.success is True
             client._http.long_press.assert_called_once_with("device123", Point(x=100, y=200))
@@ -91,11 +93,11 @@ class TestDeviceBaseClientTouchOperations:
 
     def test_swipe(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             client._http = MagicMock()
             client._http.swipe.return_value = MagicMock(success=True)
 
-            result = client.swipe("device123", x1=0, y1=0, x2=100, y2=200)
+            result = client.swipe(x1=0, y1=0, x2=100, y2=200)
 
             assert result.success is True
             client._http.swipe.assert_called_once_with(
@@ -109,11 +111,11 @@ class TestDeviceBaseClientNavigation:
 
     def test_back(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             client._http = MagicMock()
             client._http.back.return_value = MagicMock(success=True)
 
-            result = client.back("device123")
+            result = client.back()
 
             assert result.success is True
             client._http.back.assert_called_once_with("device123")
@@ -121,11 +123,11 @@ class TestDeviceBaseClientNavigation:
 
     def test_home(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             client._http = MagicMock()
             client._http.home.return_value = MagicMock(success=True)
 
-            result = client.home("device123")
+            result = client.home()
 
             assert result.success is True
             client._http.home.assert_called_once_with("device123")
@@ -137,11 +139,11 @@ class TestDeviceBaseClientAppOperations:
 
     def test_launch_app(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             client._http = MagicMock()
             client._http.launch_app.return_value = MagicMock(success=True)
 
-            result = client.launch_app("device123", "com.example.app")
+            result = client.launch_app("com.example.app")
 
             assert result.success is True
             client._http.launch_app.assert_called_once_with("device123", "com.example.app")
@@ -149,13 +151,13 @@ class TestDeviceBaseClientAppOperations:
 
     def test_get_current_app(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             client._http = MagicMock()
             mock_app_info = MagicMock()
             mock_app_info.data = {"package": "com.example.app"}
             client._http.get_current_app.return_value = mock_app_info
 
-            result = client.get_current_app("device123")
+            result = client.get_current_app()
 
             assert result.data["package"] == "com.example.app"
             client._http.get_current_app.assert_called_once_with("device123")
@@ -167,11 +169,11 @@ class TestDeviceBaseClientTextInput:
 
     def test_input_text(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             client._http = MagicMock()
             client._http.input_text.return_value = MagicMock(success=True)
 
-            result = client.input_text("device123", "Hello World")
+            result = client.input_text("Hello World")
 
             assert result.success is True
             client._http.input_text.assert_called_once_with("device123", "Hello World")
@@ -179,11 +181,11 @@ class TestDeviceBaseClientTextInput:
 
     def test_clear_text(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
+            client = DeviceBaseClient(serial="device123")
             client._http = MagicMock()
             client._http.clear_text.return_value = MagicMock(success=True)
 
-            result = client.clear_text("device123")
+            result = client.clear_text()
 
             assert result.success is True
             client._http.clear_text.assert_called_once_with("device123")
@@ -195,8 +197,8 @@ class TestDeviceBaseClientWebSocketClients:
 
     def test_minicap_client(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
-            minicap = client.minicap_client("device123")
+            client = DeviceBaseClient(serial="device123")
+            minicap = client.minicap_client()
 
             assert minicap._serial == "device123"
             assert minicap._api_key == "test-key"
@@ -204,8 +206,8 @@ class TestDeviceBaseClientWebSocketClients:
 
     def test_minitouch_client(self) -> None:
         with patch.dict(os.environ, {"DEVICEBASE_API_KEY": "test-key"}):
-            client = DeviceBaseClient()
-            minitouch = client.minitouch_client("device123")
+            client = DeviceBaseClient(serial="device123")
+            minitouch = client.minitouch_client()
 
             assert minitouch._serial == "device123"
             assert minitouch._api_key == "test-key"

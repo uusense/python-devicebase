@@ -13,19 +13,19 @@ pip install devicebase
 ```python
 from devicebase import DeviceBaseClient
 
-# Initialize client (reads DEVICEBASE_BASE_URL and DEVICEBASE_API_KEY from env)
-client = DeviceBaseClient()
+# Initialize client with device serial
+client = DeviceBaseClient(serial="device123")
 
 # Get device info
-info = client.get_device_info("device123")
+info = client.get_device_info()
 
 # Control the device
-client.tap("device123", x=100, y=200)
-client.swipe("device123", x1=0, y1=500, x2=500, y2=500)
-client.launch_app("device123", "com.example.app")
+client.tap(x=100, y=200)
+client.swipe(x1=0, y1=500, x2=500, y2=500)
+client.launch_app("com.example.app")
 
 # Take a screenshot
-screenshot_bytes = client.get_screenshot("device123")
+screenshot_bytes = client.get_screenshot()
 with open("screenshot.jpg", "wb") as f:
     f.write(screenshot_bytes)
 ```
@@ -40,10 +40,11 @@ import os
 # Option 1: Environment variables (optional, has default values)
 os.environ["DEVICEBASE_API_KEY"] = "your-api-key"
 # DEVICEBASE_BASE_URL defaults to https://api.devicebase.cn if not set
-client = DeviceBaseClient()
+client = DeviceBaseClient(serial="device123")
 
 # Option 2: Constructor parameters
 client = DeviceBaseClient(
+    serial="device123",
     base_url="https://api.devicebase.cn",
     api_key="your-api-key"
 )
@@ -57,36 +58,36 @@ Both HTTP and HTTPS protocols are supported.
 
 ```python
 # Single tap
-client.tap("device123", x=100, y=200)
+client.tap(x=100, y=200)
 
 # Double tap
-client.double_tap("device123", x=100, y=200)
+client.double_tap(x=100, y=200)
 
 # Long press
-client.long_press("device123", x=100, y=200)
+client.long_press(x=100, y=200)
 
 # Swipe
-client.swipe("device123", x1=0, y1=500, x2=500, y2=500)
+client.swipe(x1=0, y1=500, x2=500, y2=500)
 ```
 
 ### Navigation
 
 ```python
 # Press back button
-client.back("device123")
+client.back()
 
 # Press home button
-client.home("device123")
+client.home()
 ```
 
 ### App Operations
 
 ```python
 # Launch an app
-client.launch_app("device123", "微信")
+client.launch_app("微信")
 
 # Get current foreground app
-app_info = client.get_current_app("device123")
+app_info = client.get_current_app()
 print(app_info.data["package"])
 ```
 
@@ -94,17 +95,17 @@ print(app_info.data["package"])
 
 ```python
 # Input text into focused field
-client.input_text("device123", "Hello World")
+client.input_text("Hello World")
 
 # Clear text in focused field
-client.clear_text("device123")
+client.clear_text()
 ```
 
 ### UI Hierarchy
 
 ```python
 # Dump UI hierarchy (useful for automation)
-hierarchy = client.dump_hierarchy("device123")
+hierarchy = client.dump_hierarchy()
 print(hierarchy.data)
 ```
 
@@ -112,10 +113,10 @@ print(hierarchy.data)
 
 ```python
 # Get screenshot as JPEG bytes
-screenshot = client.get_screenshot("device123")
+screenshot = client.get_screenshot()
 
 # Download screenshot as file attachment
-download = client.download_screenshot("device123")
+download = client.download_screenshot()
 ```
 
 ## WebSocket Streaming
@@ -126,8 +127,8 @@ download = client.download_screenshot("device123")
 import asyncio
 
 async def stream_screen():
-    client = DeviceBaseClient()
-    minicap = client.minicap_client("device123")
+    client = DeviceBaseClient(serial="device123")
+    minicap = client.minicap_client()
 
     async for frame in minicap.stream_frames():
         # frame is JPEG bytes
@@ -143,8 +144,8 @@ asyncio.run(stream_screen())
 import asyncio
 
 async def control_touch():
-    client = DeviceBaseClient()
-    minitouch = client.minitouch_client("device123")
+    client = DeviceBaseClient(serial="device123")
+    minitouch = client.minitouch_client()
 
     async with minitouch:
         # Tap at coordinates
@@ -167,8 +168,8 @@ from devicebase import (
 )
 
 try:
-    client = DeviceBaseClient()
-    info = client.get_device_info("device123")
+    client = DeviceBaseClient(serial="device123")
+    info = client.get_device_info()
 except AuthenticationError:
     print("Invalid or missing API key")
 except DeviceNotFoundError:
